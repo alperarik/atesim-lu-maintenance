@@ -6,7 +6,15 @@ import (
 	"time"
 )
 
-func (p *PlutoServer) HandleStartup(deviceIP string) int {
+// StartupResponse represents the possible responses for device startup
+type StartupResponse int
+
+const (
+	StartupResponseNormal           StartupResponse = iota // 0
+	StartupResponseThresholdReached                        // 1
+)
+
+func (p *PlutoServer) HandleStartup(deviceIP string) StartupResponse {
 	now := time.Now()
 
 	device, exists := p.Devices[deviceIP]
@@ -29,19 +37,19 @@ func (p *PlutoServer) HandleStartup(deviceIP string) int {
 		log.Printf("Error saving device: %v", err)
 	}
 
-	response := 1
+	response := StartupResponseNormal
 	if device.CurrentCount >= p.Threshold {
-		response = 2
+		response = StartupResponseThresholdReached
 	}
 
-	if err := p.SaveLog(deviceIP, "startup", device.CurrentCount, response); err != nil {
+	if err := p.SaveLog(deviceIP, "startup", device.CurrentCount, int(response)); err != nil {
 		log.Printf("Error saving log: %v", err)
 	}
 
 	return response
 }
 
-func (p *PlutoServer) HandleCountIncrement(deviceIP string, increment int) int {
+func (p *PlutoServer) HandleCountIncrement(deviceIP string, increment int) StartupResponse {
 	now := time.Now()
 
 	device, exists := p.Devices[deviceIP]
@@ -66,17 +74,17 @@ func (p *PlutoServer) HandleCountIncrement(deviceIP string, increment int) int {
 		log.Printf("Error saving device: %v", err)
 	}
 
-	response := 0
+	response := StartupResponseNormal
 	wasAbove := oldCount >= p.Threshold
 	isAbove := device.CurrentCount >= p.Threshold
 
 	if !wasAbove && isAbove {
-		response = 2
+		response = StartupResponseThresholdReached
 		log.Printf("Device %s crossed threshold: %d -> %d", deviceIP, oldCount, device.CurrentCount)
 	}
 
 	action := fmt.Sprintf("increment+%d", increment)
-	if err := p.SaveLog(deviceIP, action, device.CurrentCount, response); err != nil {
+	if err := p.SaveLog(deviceIP, action, device.CurrentCount, int(response)); err != nil {
 		log.Printf("Error saving log: %v", err)
 	}
 

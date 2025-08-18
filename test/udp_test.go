@@ -75,7 +75,7 @@ func TestUDPServer(t *testing.T) {
 				message := strings.TrimSpace(string(buffer[:n]))
 				deviceIP := addr.IP.String()
 
-				var response int
+				var response StartupResponse
 				switch message {
 				case "0":
 					response = server.HandleStartup(deviceIP)
@@ -88,7 +88,7 @@ func TestUDPServer(t *testing.T) {
 				}
 
 				if response > 0 {
-					respChan <- strconv.Itoa(response)
+					respChan <- strconv.Itoa(int(response))
 				}
 			}
 		}

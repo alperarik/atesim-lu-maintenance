@@ -39,7 +39,7 @@ func (p *PlutoServer) handleUDPMessages() {
 		deviceIP := addr.IP.String()
 		message := strings.TrimSpace(string(buffer[:n]))
 
-		var response int
+		var response StartupResponse
 
 		switch message {
 		case "0":
@@ -59,7 +59,7 @@ func (p *PlutoServer) handleUDPMessages() {
 		}
 
 		if response > 0 {
-			responseMsg := strconv.Itoa(response)
+			responseMsg := strconv.Itoa(int(response))
 			_, err = p.Conn.WriteToUDP([]byte(responseMsg), addr)
 			if err != nil {
 				log.Printf("Error sending response to %s: %v", deviceIP, err)
