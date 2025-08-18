@@ -3,9 +3,10 @@ package core
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func (p *PlutoServer) InitDB(dbName string) error {
@@ -78,21 +79,9 @@ func (p *PlutoServer) LoadDevices() error {
 }
 
 func parseTime(timeStr string) time.Time {
-	// Try the standard format first
-	t, err := time.Parse("2006-01-02 15:04:05", timeStr)
-	if err == nil {
-		return t
-	}
 
-	// Try RFC3339 format
-	t, err = time.Parse(time.RFC3339, timeStr)
-	if err == nil {
-		return t
-	}
-
-	// Try the custom format from logs
 	utc3Location := time.FixedZone("UTC+3", 3*3600)
-	t, err = time.ParseInLocation("15:04:05 02/01/2006", timeStr, utc3Location)
+	t, err := time.ParseInLocation("15:04:05 02/01/2006", timeStr, utc3Location)
 	if err == nil {
 		return t.UTC()
 	}
