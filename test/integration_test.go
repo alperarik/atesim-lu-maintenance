@@ -36,8 +36,8 @@ func TestIntegration(t *testing.T) {
 
 	// 3. Cross threshold
 	response := server.HandleCountIncrement("192.168.1.1", 2)
-	if response != 2 {
-		t.Errorf("Expected threshold response 2, got %d", response)
+	if response != StartupResponseThresholdReached {
+		t.Errorf("Expected threshold response StartupResponseThresholdReached, got %d", response)
 	}
 
 	// 4. Verify stats

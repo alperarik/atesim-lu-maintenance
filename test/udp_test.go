@@ -87,9 +87,7 @@ func TestUDPServer(t *testing.T) {
 					response = server.HandleCountIncrement(deviceIP, increment)
 				}
 
-				if response > 0 {
-					respChan <- strconv.Itoa(int(response))
-				}
+				respChan <- strconv.Itoa(int(response))
 			}
 		}
 	}()
@@ -108,9 +106,9 @@ func TestUDPServer(t *testing.T) {
 		message  string
 		wantResp string
 	}{
-		{"Startup", "0", "1"},
-		{"Increment", "3", ""},
-		{"Threshold", "10", "2"},
+		{"Startup", "0", strconv.Itoa(int(StartupResponseNormal))},
+		{"Increment", "3", strconv.Itoa(int(StartupResponseNormal))},
+		{"Threshold", "10", strconv.Itoa(int(StartupResponseThresholdReached))},
 	}
 
 	for _, tt := range tests {

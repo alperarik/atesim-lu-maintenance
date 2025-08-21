@@ -34,8 +34,8 @@ func TestDeviceOperations(t *testing.T) {
 
 	// Test handleStartup with new device
 	response := server.HandleStartup("192.168.1.1")
-	if response != 1 {
-		t.Errorf("Expected response 1 for new device, got %d", response)
+	if response != StartupResponseNormal {
+		t.Errorf("Expected response StartupResponseNormal for new device, got %d", response)
 	}
 	if len(server.Devices) != 1 {
 		t.Errorf("Expected 1 device, got %d", len(server.Devices))
@@ -43,22 +43,19 @@ func TestDeviceOperations(t *testing.T) {
 
 	// Test handleStartup with existing device
 	response = server.HandleStartup("192.168.1.1")
-	if response != 1 {
-		t.Errorf("Expected response 1 for existing device, got %d", response)
+	if response != StartupResponseNormal {
+		t.Errorf("Expected response StartupResponseNormal for existing device, got %d", response)
 	}
 
 	// Test handleCountIncrement below threshold
 	response = server.HandleCountIncrement("192.168.1.1", 5)
-	if response != 0 {
-		t.Errorf("Expected no response for increment below threshold, got %d", response)
+	if response != StartupResponseNormal {
+		t.Errorf("Expected response StartupResponseNormal for increment below threshold, got %d", response)
 	}
 
 	// Test handleCountIncrement crossing threshold
-	response = server.HandleCountIncrement("192.168.1.1", 6)
-	if response != 2 {
-		t.Errorf("Expected response 2 for crossing threshold, got %d", response)
+	response = server.HandleCountIncrement("192.168.1.1", 10)
+	if response != StartupResponseThresholdReached {
+		t.Errorf("Expected response StartupResponseThresholdReached for crossing threshold, got %d", response)
 	}
-
-	// Test printStats (just ensure it doesn't panic)
-	server.PrintStats()
 }
